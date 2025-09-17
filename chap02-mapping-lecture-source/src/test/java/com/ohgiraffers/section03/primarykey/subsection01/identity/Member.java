@@ -1,14 +1,22 @@
-package com.ohgiraffers.section02.column;
+package com.ohgiraffers.section03.primarykey.subsection01.identity;
 
 import jakarta.persistence.*;
 
 import java.util.Date;
 
-@Entity(name = "member_section02")
-@Table(name = "tbl_member_section02")
+@Entity(name = "member_section03_subsection01")
+@Table(name = "tbl_member_section03_subsection01")
 public class Member {
+
+    /* 설명.
+     *  - IDENTITY: MySQL 또는 MariaDB의 auto_increment
+     *  - SEQUENCE: 데이터베이스의 시퀀스 객체 사용(Oracle의 SEQUENCE)
+     *  - TABLE: 키 생성 테이블 사용
+     *  - AUTO: 자동 선택(MySQL이면 IDENTITY/ORACLE이면 SEQUENCE)
+    * */
     @Id
     @Column(name="member_no")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int memberNo;
 
     @Column(name = "member_id")
