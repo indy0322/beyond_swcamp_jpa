@@ -69,8 +69,8 @@ public class EntityManagerCRUDTest {
     @Test
     public void 메뉴_이름_수정_테스트(){
 
-        /* 설명. 23번 메뉴 엔티티를 영속 상태로 만들어 받은 다음 */
-        Menu menu = entityManager.find(Menu.class, 23);
+        /* 설명. 10번 메뉴 엔티티를 영속 상태로 만들어 받은 다음 */
+        Menu menu = entityManager.find(Menu.class, 10);
         System.out.println("수정 전 menu: " + menu);
 
         String menuNameToChange = "갈치스무디";
@@ -85,5 +85,20 @@ public class EntityManagerCRUDTest {
             transaction.rollback();
         }
 
+    }
+
+    @Test
+    public void 메뉴_삭제하기_테스트(){
+        Menu menuToRemove = entityManager.find(Menu.class,21);
+
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        try{
+            entityManager.remove(menuToRemove);
+            transaction.commit();
+        }catch(Exception e){
+            transaction.rollback();
+        }
     }
 }
