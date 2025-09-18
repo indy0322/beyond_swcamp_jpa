@@ -9,6 +9,7 @@
         <class>com.ohgiraffers.section02.column.Member</class>
         <class>com.ohgiraffers.section03.primarykey.subsection01.identity.Member</class>
         <class>com.ohgiraffers.section03.primarykey.subsection02.table.Member</class>
+        <class>com.ohgiraffers.section04.enumtype.Member</class>
 
         <properties>
 
