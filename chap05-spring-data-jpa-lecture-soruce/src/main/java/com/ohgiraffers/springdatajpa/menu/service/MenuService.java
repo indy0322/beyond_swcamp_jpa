@@ -1,8 +1,13 @@
 package com.ohgiraffers.springdatajpa.menu.service;
 
-import com.ohgiraffers.springdatajpa.menu.Repository.MenuRepository;
+import com.ohgiraffers.springdatajpa.menu.entity.Category;
+import com.ohgiraffers.springdatajpa.menu.repository.CategoryRepository;
+
+import com.ohgiraffers.springdatajpa.menu.controller.CategoryDTO;
 import com.ohgiraffers.springdatajpa.menu.dto.MenuDTO;
 import com.ohgiraffers.springdatajpa.menu.entity.Menu;
+
+import com.ohgiraffers.springdatajpa.menu.repository.MenuRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +16,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -20,12 +28,14 @@ import java.util.stream.Collectors;
 public class MenuService {
 
     private final MenuRepository menuRepository;
+    private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public MenuService(MenuRepository menuRepository, ModelMapper modelMapper) {
+    public MenuService(MenuRepository menuRepository, ModelMapper modelMapper, CategoryRepository categoryRepository) {
         this.menuRepository = menuRepository;
         this.modelMapper = modelMapper;
+        this.categoryRepository = categoryRepository;
     }
 
     /* 설명. 1. findById(), Optional이 반환되는 점을 고려(get(), orElseXXX()) */
@@ -34,6 +44,30 @@ public class MenuService {
 
         log.debug("service계층에서 하나의 메뉴 상세보기: {}", menu);
         return modelMapper.map(menu, MenuDTO.class);
+    }
+
+    /* 설명. ModelMapper 안쓰고 수동으로 매핑하는 법 */
+    MenuDTO menuToMenuDTO(Menu menu) {
+        MenuDTO menuDTO = new MenuDTO();
+//        menuDTO.setMenuCode(menu.getMenuCode());
+        menuDTO.setMenuName(menu.getMenuName());
+        menuDTO.setMenuPrice(menu.getMenuPrice());
+//        menuDTO.setCategoryCode(menu.getCategoryCode());
+//        menuDTO.setOrderableStatus(menu.getOrderableStatus());
+
+        return menuDTO;
+    }
+
+    /* 설명. Controller와 Service 계층 사이는 DTO가 아닌 Map으로 처리도 가능하다.(feat. 다운캐스팅 조심) */
+    Map<String, Object> menuToMenuMap(Menu menu) {
+        Map<String, Object> menuMap = new HashMap();
+        menuMap.put("menuCode", menu.getMenuCode());
+        menuMap.put("menuName", menu.getMenuName());
+        menuMap.put("menuPrice", menu.getMenuPrice());
+        menuMap.put("categoryCode", menu.getCategoryCode());
+        menuMap.put("orderableStatus", menu.getOrderableStatus());
+
+        return menuMap;
     }
 
     /* 설명. 2. findAll() (페이징 처리 전) */
@@ -62,5 +96,21 @@ public class MenuService {
 
         /* 설명. Page는 자체로 stream이다. */
         return menuList.map(menu -> modelMapper.map(menu, MenuDTO.class));
+    }
+
+    /* 설명. 4. jpql 및 native query 활용 */
+    public List<CategoryDTO> findAllCategory() {
+
+        List<Category> categories = categoryRepository.findAllCategories();
+
+        return categories.stream()
+                .map(category -> modelMapper.map(category, CategoryDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    /* 설명. 5. insert 진행(Entity로 변환) */
+    @Transactional
+    public void registMenu(MenuDTO newMenu) {
+        menuRepository.save(modelMapper.map(newMenu, Menu.class));
     }
 }

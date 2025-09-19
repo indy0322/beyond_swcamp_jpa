@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>신규 메뉴 등록</h1>
+    <form action="/menu/regist" method="post">
+        <label for="">메뉴 이름:</label><input type="text" name="menuName"><br>
+        <label for="">메뉴 가격:</label><input type="number" name="menuPrice"><br>
+        <label for="">카테고리:</label>
+        <select name="categoryCode" id="categoryCode">
+            <!--
+              카테고리 내용을 현재 DB에 있는 카테고리 내용으로 보여질 수 있게 fetch를 활용한 비동기 처리
+            -->
+        </select><br>
+        <label for="">판매 상태: </label>
+        <select name="orderableStatus" id="">
+            <option value="Y">판매 가능</option>
+            <option value="N">판매 불가</option>
+        </select>
+        <input type="submit" value="메뉴 추가">
+    </form>
+    <script>
+        fetch('/menu/category', {method: 'GET'})
+            .then(res => res.json())
+            .then(data => {
+                const $categoryCode = document.getElementById("categoryCode");
+                console.log($categoryCode);
+
+                for(let index in data){
+                    if(data[index].categoryCode > 3) {
+                        const $option = document.createElement('option');
+                        $option.value = data[index].categoryCode;
+                        $option.textContent = data[index].categoryName;
+
+                        $categoryCode.appendChild($option);
+                    }
+                }
+            })
+    </script>
+</body>
+</html>

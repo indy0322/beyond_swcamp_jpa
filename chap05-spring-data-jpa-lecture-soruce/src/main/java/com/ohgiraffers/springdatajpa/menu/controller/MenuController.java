@@ -1,5 +1,6 @@
 package com.ohgiraffers.springdatajpa.menu.controller;
 
+import com.ohgiraffers.springdatajpa.menu.common.PagingButtonInfo;
 import com.ohgiraffers.springdatajpa.menu.dto.MenuDTO;
 import com.ohgiraffers.springdatajpa.menu.service.MenuService;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import com.ohgiraffers.springdatajpa.menu.common.Pagination;
 
 import java.util.List;
 
@@ -90,9 +90,31 @@ public class MenuController {
         log.debug("현재 페이지: {}",menuList.getNumber());
         log.debug("정렬 기준: {}",menuList.getSort());
 
+        /* 설명. Page객체를 통해 PagingButtonInfo(front가 페이징 처리 버튼을 그리기 위한 재료를 지닌) 추출 */
+        PagingButtonInfo paging = Pagination.getPagingButtonInfo(menuList);
+
         model.addAttribute("menuList", menuList);
+        model.addAttribute("paging", paging);
 
         return "menu/list";
     }
+
+    @GetMapping("/regist")
+    public void registMenu() {
+    }
+
+    @GetMapping("/category")
+    @ResponseBody                // 핸들러 메소드의 반환형이 View Resolver를 무시해야 할 때(feat.json 문자열로 반환)
+    public List<CategoryDTO> findCategoryList() {
+        return menuService.findAllCategory();
+    }
+
+    @PostMapping("/regist")
+    public String registMenu(MenuDTO newMenu) {
+        menuService.registMenu(newMenu);
+
+        return "redirect:/menu/list";
+    }
+
 
 }
