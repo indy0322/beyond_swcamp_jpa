@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.ohgiraffers.springdatajpa.menu.common.Pagination;
 
+import java.lang.management.MemoryUsage;
 import java.util.List;
 
 @Slf4j
@@ -116,5 +117,37 @@ public class MenuController {
         return "redirect:/menu/list";
     }
 
+    @GetMapping("/modify")
+    public void modifyMenu() {
+    }
 
+    @PostMapping("/modify")
+    public String modifyMenuPage(MenuDTO modifyMenu) {
+        menuService.modifyMenu(modifyMenu);
+
+        return "redirect:/menu/" + modifyMenu.getMenuCode();
+    }
+
+    @GetMapping("/delete")
+    public void deleteMenuPage() {}
+
+    @PostMapping("/delete")
+    public String deleteMenu(@RequestParam int menuCode) {
+        menuService.deleteMenu(menuCode);
+
+        return "redirect:/menu/list";
+    }
+
+    @GetMapping("/querymethod")
+    public void queryMethod() {}
+
+    @GetMapping("/search")
+    public String findMenuPrice(@RequestParam int menuPrice, Model model){
+        List<MenuDTO> menuList = menuService.findMenuPrice(menuPrice);
+
+        model.addAttribute("menuList", menuList);
+        model.addAttribute("menuPrice", menuPrice);
+
+        return "menu/searchResult";
+    }
 }
